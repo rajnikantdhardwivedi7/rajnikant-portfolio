@@ -2,23 +2,25 @@
   {%- if path is matching("^http[s]?://") or path is matching("\.gif$") -%}
     <img src="{{ path }}" alt="{{ caption | default(value='') }}" loading="lazy" decoding="async" />
   {%- else -%}
-    {%- set meta = get_image_metadata(path=path) -%}
+    {%- set resolved_path = rel_path(path) -%}
+    {%- set meta = get_image_metadata(path=resolved_path) -%}
     {%- set final_width = width | default(value=meta.width) -%}
     {%- set final_height = height | default(value=meta.height) -%}
-    {%- set resized = resize_image(path=path, width=final_width, height=final_height, op="fit", format="webp") -%}
+    {%- set resized = resize_image(path=resolved_path, width=final_width, height=final_height, op="fit", format="webp") -%}
     {%- set srcset = resized.url ~ " " ~ final_width ~ "w" -%}
 
     {%- for size in range(start=100, end=meta.width, step_by=100) -%}
-      {%- set resized = resize_image(path=path, width=size, height=final_height, op="fit", format="webp") -%}
+      {%- set resized = resize_image(path=resolved_path, width=size, height=final_height, op="fit", format="webp") -%}
       {%- set_global srcset = resized.url ~ " " ~ size ~ "w ," ~ srcset -%}
     {%- endfor -%}
 
-    <a href="{{ path }}" class="img-fullscreen-link" target="_blank">
+    <a href="{{ resolved_path }}" class="img-fullscreen-link" target="_blank">
       <img
-        src="{{ path }}"
+        src="{{ resized.url }}"
         srcset="{{ srcset }}"
         alt="{{ caption | default(value='') }}"
         width="{{ resized.width }}"
+        height="{{ resized.height }}"
         loading="lazy"
         decoding="async"
       />
