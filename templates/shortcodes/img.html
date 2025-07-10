@@ -2,7 +2,7 @@
   {%- if path is matching("^http[s]?://") or path is matching("\.gif$") -%}
     <img src="{{ path }}" alt="{{ caption | default(value='') }}" loading="lazy" decoding="async" />
   {%- else -%}
-    {%- set resolved_path = rel_path(path) -%}
+    {%- set resolved_path = rel_path(path=path) -%}
     {%- set meta = get_image_metadata(path=resolved_path) -%}
     {%- set final_width = width | default(value=meta.width) -%}
     {%- set final_height = height | default(value=meta.height) -%}
